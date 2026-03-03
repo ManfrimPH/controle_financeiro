@@ -1,7 +1,7 @@
 import telebot
 import os
 from dotenv import load_dotenv
-from add import first_quest, second_quest
+from add import first_quest, second_quest_gain, third_quest_gain
 
 load_dotenv()
 bot_key = os.getenv("BOT_KEY")
@@ -21,13 +21,16 @@ def add_command(message):
 def add_callback_one(call):
     second_quest_gain(call, finance_bot)
 
+@finance_bot.callback_query_handler(func=lambda call: call.data.startswith("gain_entry_type_"))
+def add_callback_two(call):
+    third_quest_gain(call, finance_bot)
 
 ## Spent quests
 
 
-@finance_bot.callback_query_handler(func=lambda call: call.data.startswith("Gasto"))
-def add_callback_one(call):
-    second_quest_spent(call, finance_bot)
+# @finance_bot.callback_query_handler(func=lambda call: call.data.startswith("Gasto"))
+# def add_callback_one(call):
+#     second_quest_spent(call, finance_bot)
 
 
-finance_bot.polling()
+finance_bot.infinity_polling()
