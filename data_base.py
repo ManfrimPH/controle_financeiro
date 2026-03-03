@@ -1,13 +1,17 @@
 import psycopg2
 
+
 def add_ganhos():
-  pass
+    pass
+
 
 def add_gastos():
-  pass
+    pass
+
 
 def get_last():
-  pass
+    pass
+
 
 def delete():
-  pass
+    pass
