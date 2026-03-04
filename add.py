@@ -68,10 +68,9 @@ def fourth_quest_gain(message, finance_bot):
     chat_id = message.chat.id
     chat_data[chat_id]["value"] = message.text.replace(",",".")
 
-    msg = finance_bot.edit_message_text(
-        f"Categoria: *{chat_data[chat_id]['category']}*\n\n *Valor: {chat_data[chat_id]['value']}* \n\n**De onde veio isso? (texto livre)**",
+    msg = finance_bot.send_message(
         chat_id,
-        message.message_id,
+        f"Categoria: *{chat_data[chat_id]['category']}*\n\n *Valor: {chat_data[chat_id]['value']}* \n\n**De onde veio isso? (texto livre)**",
         parse_mode="Markdown",
     )
     
@@ -79,7 +78,7 @@ def fourth_quest_gain(message, finance_bot):
 
 def salvar_final_financeiro(message,finance_bot):
     chat_id = message.chat.id
-    chat_data[chat_id]['local'] = message.text
+    chat_data[chat_id]['description'] = message.text
     
     dados = chat_data[chat_id]
     
@@ -87,7 +86,7 @@ def salvar_final_financeiro(message,finance_bot):
         f"**Novo Registrado!**\n\n"
         f"**Tipo de entrada:** {dados['entry_type']}\n\n"
         f"**Categoria:** {dados['category']}\n"
-        f"**Método:** {dados['metodo']}\n"
+        f"**Descrição:** {dados['description']}\n"
         f"**Valor:** R$ {dados['value']}\n"
         f"*Dados prontos para o banco de dados!*"
     )
