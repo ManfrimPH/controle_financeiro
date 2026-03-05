@@ -3,8 +3,7 @@ from data_base import add_gain, add_spent
 
 chat_data = {}
 
-
-def first_quest(message, finance_bot):
+def first_quest_add(message, finance_bot):
     chat_id = message.chat.id
     chat_data[chat_id] = {}
 
@@ -105,6 +104,7 @@ def save_gain(message, finance_bot):
     elif resp == False:
         finance_bot.bot.send_message(chat_id, "Erro ao inserir!", parse_mode="Markdown")
 
+    del chat_data[chat_id]
 
 ## Spent Format
 
@@ -215,3 +215,5 @@ def save_spent(message, finance_bot):
         finance_bot.send_message(chat_id, "Dados inseridos!", parse_mode="Markdown")
     elif resp == False:
         finance_bot.bot.send_message(chat_id, "Erro ao inserir!", parse_mode="Markdown")
+
+    del chat_data[chat_id]
