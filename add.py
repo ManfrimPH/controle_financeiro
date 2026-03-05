@@ -1,4 +1,5 @@
 from telebot import types
+from data_base import add_gain, add_spent
 
 chat_data = {}
 
@@ -77,10 +78,10 @@ def fourth_quest_gain(message, finance_bot):
         parse_mode="Markdown",
     )
 
-    finance_bot.register_next_step_handler(msg, salvar_final_financeiro, finance_bot)
+    finance_bot.register_next_step_handler(msg, save_gain, finance_bot)
 
 
-def salvar_final_financeiro(message, finance_bot):
+def save_gain(message, finance_bot):
     chat_id = message.chat.id
     chat_data[chat_id]["description"] = message.text
 
@@ -96,7 +97,13 @@ def salvar_final_financeiro(message, finance_bot):
     )
 
     finance_bot.send_message(chat_id, resumo, parse_mode="Markdown")
-    finance_bot.send_message(chat_id, "Dados inseridos!", parse_mode="Markdown")
+
+    resp = add_gain(dados)
+
+    if resp == True:
+        finance_bot.send_message(chat_id, "Dados inseridos!", parse_mode="Markdown")
+    elif resp == False:
+        finance_bot.bot.send_message(chat_id, "Erro ao inserir!", parse_mode="Markdown")
 
 
 ## Spent Format
@@ -109,7 +116,7 @@ def second_quest_spent(call, finance_bot):
     markup = types.InlineKeyboardMarkup()
     markup.add(
         types.InlineKeyboardButton(
-            "Gastos Fixos", callback_data="spent_category_Essencial"
+            "Essencial", callback_data="spent_category_Essencial"
         ),
         types.InlineKeyboardButton(
             "Estilo de Vida", callback_data="spent_category_Estilo de Vida"
@@ -181,10 +188,10 @@ def fifth_quest_spent(message, finance_bot):
         parse_mode="Markdown",
     )
 
-    finance_bot.register_next_step_handler(msg, salvar_final_financeiro, finance_bot)
+    finance_bot.register_next_step_handler(msg, save_spent, finance_bot)
 
 
-def salvar_final_financeiro(message, finance_bot):
+def save_spent(message, finance_bot):
     chat_id = message.chat.id
     chat_data[chat_id]["description"] = message.text
 
@@ -201,4 +208,10 @@ def salvar_final_financeiro(message, finance_bot):
     )
 
     finance_bot.send_message(chat_id, resumo, parse_mode="Markdown")
-    finance_bot.send_message(chat_id, "Dados inseridos!", parse_mode="Markdown")
+
+    resp = add_spent(dados)
+
+    if resp == True:
+        finance_bot.send_message(chat_id, "Dados inseridos!", parse_mode="Markdown")
+    elif resp == False:
+        finance_bot.bot.send_message(chat_id, "Erro ao inserir!", parse_mode="Markdown")
