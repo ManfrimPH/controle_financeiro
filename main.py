@@ -1,7 +1,14 @@
 import telebot
 import os
 from dotenv import load_dotenv
-from add import first_quest, second_quest_gain, third_quest_gain,second_quest_spent,third_quest_spent,fourth_quest_spent
+from add import (
+    first_quest,
+    second_quest_gain,
+    third_quest_gain,
+    second_quest_spent,
+    third_quest_spent,
+    fourth_quest_spent,
+)
 
 load_dotenv()
 bot_key = os.getenv("BOT_KEY")
@@ -17,25 +24,40 @@ def add_command(message):
 ## Gain quests
 
 
-@finance_bot.callback_query_handler(func=lambda call: call.data.startswith("gain_entry_type_"))
+@finance_bot.callback_query_handler(
+    func=lambda call: call.data.startswith("gain_entry_type_")
+)
 def add_callback_gain_one(call):
     second_quest_gain(call, finance_bot)
 
-@finance_bot.callback_query_handler(func=lambda call: call.data.startswith("gain_category_"))
+
+@finance_bot.callback_query_handler(
+    func=lambda call: call.data.startswith("gain_category_")
+)
 def add_callback_gain_two(call):
     third_quest_gain(call, finance_bot)
 
+
 ## Spent quests
 
-@finance_bot.callback_query_handler(func=lambda call: call.data.startswith("spent_entry_type_"))
+
+@finance_bot.callback_query_handler(
+    func=lambda call: call.data.startswith("spent_entry_type_")
+)
 def add_callback_spent_one(call):
     second_quest_spent(call, finance_bot)
 
-@finance_bot.callback_query_handler(func=lambda call: call.data.startswith("spent_category_"))
+
+@finance_bot.callback_query_handler(
+    func=lambda call: call.data.startswith("spent_category_")
+)
 def add_callback_spent_two(call):
     third_quest_spent(call, finance_bot)
 
-@finance_bot.callback_query_handler(func=lambda call: call.data.startswith("spent_payment_method_"))
+
+@finance_bot.callback_query_handler(
+    func=lambda call: call.data.startswith("spent_payment_method_")
+)
 def add_callback_spent_three(call):
     fourth_quest_spent(call, finance_bot)
 
