@@ -1,0 +1,5 @@
+google_api_python_client==2.193.0
+protobuf==7.34.0
+psycopg2_binary==2.9.11
+pyTelegramBotAPI==4.32.0
+python-dotenv==1.2.2
