@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 
 def add_gain(dados):
-
+    conexao = None
     try:
         load_dotenv()
         db_host = os.getenv("DB_HOST")
@@ -18,13 +18,14 @@ def add_gain(dados):
 
         cursor = conexao.cursor()
         cursor.execute(
-            "INSERT INTO financeiro.gain (category, value, description, date) VALUES (%s,%s,%s, now())",
-            (dados["category"], dados["value"], dados["description"]),
+            "INSERT INTO financeiro.gain (category, value, description, date) VALUES (%s,%s,%s,to_timestamp(%s, 'DD/MM/YYYY'))",
+            (dados["category"], dados["value"], dados["description"], dados["date"],),
         )
         conexao.commit()
         return True
 
     except Exception as e:
+        print(e)
         return False
 
     finally:
@@ -34,6 +35,7 @@ def add_gain(dados):
 
 
 def add_spent(dados):
+    conexao = None
     try:
         load_dotenv()
         db_host = os.getenv("DB_HOST")
@@ -47,18 +49,20 @@ def add_spent(dados):
 
         cursor = conexao.cursor()
         cursor.execute(
-            "INSERT INTO financeiro.spent (category, payment_method, value, description, date) VALUES (%s,%s,%s,%s, now())",
+            "INSERT INTO financeiro.spent (category, payment_method, value, description, date) VALUES (%s,%s,%s,%s,to_timestamp(%s, 'DD/MM/YYYY'))",
             (
                 dados["category"],
                 dados["payment_method"],
                 dados["value"],
                 dados["description"],
+                dados["date"],
             ),
         )
         conexao.commit()
         return True
 
     except Exception as e:
+        print(e)
         return False
 
     finally:
@@ -68,6 +72,7 @@ def add_spent(dados):
 
 
 def delete(dados):
+    conexao = None
     try:
         load_dotenv()
         db_host = os.getenv("DB_HOST")
@@ -87,6 +92,7 @@ def delete(dados):
         return True
 
     except Exception as e:
+        print(e)
         return False
 
     finally:
@@ -95,6 +101,7 @@ def delete(dados):
             conexao.close()
 
 def get_all(table):
+    conexao = None
     try:
         load_dotenv()
         db_host = os.getenv("DB_HOST")
@@ -116,6 +123,7 @@ def get_all(table):
         return registros, columns
 
     except Exception as e:
+        print(e)
         return None
 
     finally:

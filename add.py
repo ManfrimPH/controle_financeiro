@@ -78,12 +78,25 @@ def fourth_quest_gain(message, finance_bot):
         parse_mode="Markdown",
     )
 
-    finance_bot.register_next_step_handler(msg, save_gain, finance_bot)
+    finance_bot.register_next_step_handler(msg, fifth_quest_gain, finance_bot)
 
+
+def fifth_quest_gain(message, finance_bot):
+
+    chat_id = message.chat.id
+    chat_data[chat_id]["description"] = message.text
+
+    msg = finance_bot.send_message(
+        chat_id,
+        "**Para qual data é esse gasto?**\nResponda (DD/MM/AAAA).",
+        parse_mode="Markdown"
+    )
+
+    finance_bot.register_next_step_handler(msg, save_gain, finance_bot)
 
 def save_gain(message, finance_bot):
     chat_id = message.chat.id
-    chat_data[chat_id]["description"] = message.text
+    chat_data[chat_id]["date"] = message.text
 
     dados = chat_data[chat_id]
 
@@ -93,6 +106,7 @@ def save_gain(message, finance_bot):
         f"**Categoria:** {dados['category']}\n"
         f"**Descrição:** {dados['description']}\n"
         f"**Valor:** R$ {dados['value']}\n"
+        f"**Data:** {dados['date']}\n"
         f"*Dados prontos para o banco de dados!*"
     )
 
@@ -190,12 +204,26 @@ def fifth_quest_spent(message, finance_bot):
         parse_mode="Markdown",
     )
 
+    finance_bot.register_next_step_handler(msg, sixth_quest_gain, finance_bot)
+
+
+def sixth_quest_gain(message, finance_bot):
+
+    chat_id = message.chat.id
+    chat_data[chat_id]["description"] = message.text
+
+    msg = finance_bot.send_message(
+        chat_id,
+        "**Para qual data é esse gasto?**\nResponda (DD/MM/AAAA).",
+        parse_mode="Markdown"
+    )
+
     finance_bot.register_next_step_handler(msg, save_spent, finance_bot)
 
 
 def save_spent(message, finance_bot):
     chat_id = message.chat.id
-    chat_data[chat_id]["description"] = message.text
+    chat_data[chat_id]["date"] = message.text
 
     dados = chat_data[chat_id]
 
@@ -206,12 +234,13 @@ def save_spent(message, finance_bot):
         f"**Categoria:** {dados['category']}\n"
         f"**Descrição:** {dados['description']}\n"
         f"**Valor:** R$ {dados['value']}\n"
+        f"**Data:** {dados['date']}\n"
         f"*Dados prontos para o banco de dados!*"
     )
 
     finance_bot.send_message(chat_id, resumo, parse_mode="Markdown")
 
-    resp = add_spent(dados)
+    resp = add_gain(dados)
 
     if resp == True:
         finance_bot.send_message(chat_id, "Dados inseridos!", parse_mode="Markdown")
