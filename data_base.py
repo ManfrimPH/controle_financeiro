@@ -66,10 +66,6 @@ def add_spent(dados):
             conexao.close()
 
 
-def get_last():
-    pass
-
-
 def delete(dados):
     try:
         load_dotenv()
@@ -91,6 +87,34 @@ def delete(dados):
 
     except Exception as e:
         return False
+
+    finally:
+        if conexao:
+            cursor.close()
+            conexao.close()
+
+def get_all(table):
+    try:
+        load_dotenv()
+        db_host = os.getenv("DB_HOST")
+        db_user = os.getenv("DB_USER")
+        db_password = os.getenv("DB_PASSWORD")
+        db_database = os.getenv("DB_DATABASE")
+        # db_port = os.getenv("DB_PORT")
+        conexao = psycopg2.connect(
+            host=db_host, database=db_database, user=db_user, password=db_password
+        )
+
+        cursor = conexao.cursor()
+        cursor.execute(
+            f"select * from financeiro.{table}"
+        )
+        registros = cursor.fetchall()
+        
+        return registros
+
+    except Exception as e:
+        return None
 
     finally:
         if conexao:

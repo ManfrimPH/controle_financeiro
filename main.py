@@ -14,6 +14,9 @@ from delete import (
     second_quest_del,
     third_quest_del,
 )
+from update import (
+    update
+)
 
 load_dotenv()
 bot_key = os.getenv("BOT_KEY")
@@ -85,5 +88,11 @@ def add_callback_del_two(call):
 ###########################################################################################
 # Update Flow 
 ###########################################################################################
+
+@finance_bot.message_handler(commands=["update"])
+def update_system(message):
+    tables = ["gain", "spent"]
+    for table in tables:
+        update(table)
 
 finance_bot.infinity_polling()
