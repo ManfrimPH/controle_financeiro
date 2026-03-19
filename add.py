@@ -240,7 +240,7 @@ def save_spent(message, finance_bot):
 
     finance_bot.send_message(chat_id, resumo, parse_mode="Markdown")
 
-    resp = add_gain(dados)
+    resp = add_spent(dados)
 
     if resp == True:
         finance_bot.send_message(chat_id, "Dados inseridos!", parse_mode="Markdown")
