@@ -29,15 +29,16 @@ def sanitize_data(data):
 
 def update(page):
 
-    data_sheets = get_all(page)
+    data_sheets, colluns = get_all(page)
 
     clean_data = sanitize_data(data_sheets)
+
+    clean_data = [colluns] + clean_data
 
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     
     service = build('sheets', 'v4', credentials=creds)
-    sheet = service.spreadsheets()
 
     service = build('sheets', 'v4', credentials=creds)
 

@@ -111,8 +111,9 @@ def get_all(table):
             f"select * from financeiro.{table}"
         )
         registros = cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
         
-        return registros
+        return registros, columns
 
     except Exception as e:
         return None
