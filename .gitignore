@@ -1,3 +1,5 @@
 .env
 __pycache__
 venv_controle_financeiro
+credentials.json
+.ruff_cache
