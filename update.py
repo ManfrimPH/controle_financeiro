@@ -40,8 +40,6 @@ def update(page):
     
     service = build('sheets', 'v4', credentials=creds)
 
-    service = build('sheets', 'v4', credentials=creds)
-
     service.spreadsheets().values().clear(
         spreadsheetId=SPREADSHEET_ID,
         range=f"{page}!A:Z"
