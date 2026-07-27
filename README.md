@@ -1,100 +1,106 @@
+# Controle Financeiro - Telegram Bot
 
-# 💰 Controle Financeiro - Telegram Bot
+![Python](https://img.shields.io/badge/python-3.12-blue.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4479A1?logo=postgresql&logoColor=white)
+![Google Sheets](https://img.shields.io/badge/Google%20Sheets-34A853?logo=googlesheets&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 
-![Python](https://img.shields.io/badge/python-3.x-blue.svg)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4479A1?style=flat&logo=postgresql&logoColor=white)
-![Google Sheets](https://img.shields.io/badge/Google%20Sheets-34A853?style=flat&logo=googlesheets&logoColor=white)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
-
-Sistema para gestão de finanças pessoais que permite registrar gastos e ganhos via Telegram. O projeto utiliza **PostgreSQL** como storage principal e o **Google Sheets** como interface de visualização rápida e espelhamento para BI.
-
----
-
-## 🚀 Arquitetura e Fluxo de Dados
-
-1.  **Ingestão:** O usuário envia os dados através do Bot do Telegram.
-2.  **Persistência:** O script `add.py` processa e insere as informações no PostgreSQL.
-3.  **Manutenção:** O script `delete.py` permite a remoção atômica do último registro inserido no banco.
-4.  **Sincronização (ETL):** O script `update.py` extrai os dados do banco e injeta-os no Google Sheets.
-5.  **Visualização:** Dashboard no Looker Studio conectado à planilha (ou diretamente ao banco via túnel).
-
-> ⚠️ **Nota Técnica:** O módulo `update.py` é uma ponte de sincronização para o Google Sheets. Se o sistema for implantado em um servidor com IP fixo/URL e os dados forem consumidos diretamente do PostgreSQL pelo BI, este módulo torna-se opcional.
+Bot Telegram para gestao de financas pessoais. Registre ganhos e gastos pelo chat e visualize no Google Sheets + Looker Studio.
 
 ---
 
-## 📊 Dashboard (Template Copiável)
+## Comandos
 
-Você pode visualizar e utilizar o modelo de dashboard estruturado para este projeto no link abaixo:
-
-👉 **[Acessar Template do Looker Studio](https://lookerstudio.google.com/u/0/reporting/620d918c-6088-4950-aa84-2ac594fe84c6/page/VoisF)**
-
-**Como copiar para você:**
-1. Abra o link acima.
-2. No canto superior direito, clique nos três pontos (⋮) e selecione **"Fazer uma cópia"**.
-3. Conecte a sua própria **Google Sheet** (gerada pelo bot) ou seu banco **PostgreSQL** como nova fonte de dados.
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-* **Linguagem:** Python 3.x
-* **Banco de Dados:** PostgreSQL (Relacional)
-* **Cloud API:** Google Sheets API v4 (gspread)
-* **Infraestrutura:** Docker & Docker Compose
-* **Interface:** Telegram Bot API
+| Comando | Descricao |
+|---------|-----------|
+| `/add` | Registrar ganho ou gasto (fluxo guiado) |
+| `/del` | Remover o ultimo registro |
+| `/list` | Mostrar ultimos 5 ganhos e 5 gastos |
+| `/summary` | Resumo do mes atual por categoria |
+| `/update` | Sincronizar dados com Google Sheets |
+| `/cancel` | Cancelar operacao em andamento |
 
 ---
 
-## 📋 Pré-requisitos
+## Arquitetura
 
-* [Git](https://git-scm.com/) e [Docker](https://www.docker.com/) instalados.
-* Token de API do [@BotFather](https://t.me/botfather).
-* Conta de Serviço (JSON) configurada no Google Cloud Console com acesso ao Sheets.
+```
+Telegram  -->  Bot (Python)  -->  PostgreSQL  -->  Google Sheets  -->  Looker Studio
+                    |                   |
+               Conversation        Connection Pool
+               Manager             (Threaded)
+```
+
+## Estrutura do Projeto
+
+```
+controle_financeiro/
+├── main.py              # Core do bot, handlers, menu de comandos
+├── add.py               # Fluxo de adicao (gain + spent)
+├── delete.py            # Fluxo de delecao
+├── update.py            # Sincronizacao banco -> Google Sheets
+├── data_base.py         # Camada de compatibilidade (dicts -> dataclasses)
+├── db.py                # Connection pool + repositorios (tuplas)
+├── models.py            # Dataclasses tipadas (GainEntry, SpentEntry)
+├── validators.py        # Validacao de entrada (moeda, data, texto)
+├── exceptions.py        # Excecoes estruturadas com mensagens amigaveis
+├── conversation.py      # Gerenciador de conversas multi-usuario
+├── commands.py          # Handlers de /list e /summary
+├── Dockerfile           # Imagem do bot (python:3.12-slim)
+├── docker-compose.yml   # Orquestracao (db + bot)
+├── init.sql             # Schema automatico do banco
+├── .env.example         # Template de variaveis de ambiente
+├── requirements.txt     # Dependencias Python
+├── credentials.json     # Service account Google Sheets (nao versionado)
+├── .gitignore
+├── .dockerignore
+└── tests/
+    ├── test_validators.py
+    ├── test_conversation.py
+    └── test_models.py
+```
 
 ---
 
-## 🔧 Instalação e Execução
+## Instalacao e Execucao
 
-### 1. Clonar o Repositório
+### Via Docker (recomendado)
+
 ```bash
-git clone [https://github.com/ManfrimPH/controle_financeiro.git](https://github.com/ManfrimPH/controle_financeiro.git)
+git clone https://github.com/ManfrimPH/controle_financeiro.git
 cd controle_financeiro
+
+cp .env.example .env
+# Edite .env com seu BOT_KEY, DB_PASSWORD e SPREADSHEET_ID
+
+# Coloque seu credentials.json do Google Sheets na raiz
+
+docker compose up -d
 ```
 
-### 2. Configurar Credenciais
-* Configure as variáveis de conexão (host, user, password) no arquivo `data_base.py`.
-* Adicione o arquivo `credentials.json` na raiz do projeto.
+### Via Python direto
 
-### 3. Provisionar o Banco (Docker)
 ```bash
-docker-compose up -d
-```
-
-### 4. Executar o Bot
-```bash
-# Instalação das dependências necessárias
 pip install -r requirements.txt
-
-# Inicialização do serviço
 python main.py
 ```
 
----
+### Executar testes
 
-## 📂 Estrutura do Projeto
-
-| Arquivo | Descrição |
-| :--- | :--- |
-| `main.py` | Core do Bot: Gerencia comandos e interação com usuário. |
-| `add.py` | Módulo de escrita (INSERT) no PostgreSQL. |
-| `delete.py` | Módulo de rollback/deleção do último registro. |
-| `update.py` | Job de sincronização Banco -> Google Sheets. |
-| `data_base.py` | Camada de abstração de dados e drivers de conexão. |
-| `*.sql` | Definição de Schema (DDL) para as tabelas de ganhos e gastos. |
-| `docker-compose.yml` | Orquestração do ambiente de banco de dados. |
-| `requirements.txt` | Lista de dependências do projeto. |
+```bash
+pytest tests/ -v
+```
 
 ---
 
-## 👤 Autor
+## Stack
+
+- **Python 3.12** com pyTelegramBotAPI
+- **PostgreSQL 16** (Docker, Alpine)
+- **Google Sheets API v4** (service account)
+- **Docker Compose** com healthcheck
+- **GitHub Actions** (CI)
+
+## Autor
+
 Desenvolvido por **ManfrimPH**.

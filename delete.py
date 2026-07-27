@@ -1,5 +1,6 @@
 from telebot import types
 from data_base import delete
+from conversation import conv_manager
 
 chat_data = {}
 
@@ -54,11 +55,11 @@ def third_quest_del(call, finance_bot):
         if resp_del == True:
             finance_bot.send_message(chat_id, "Linha Apagada!", parse_mode="Markdown")
         elif resp_del == False:
-            finance_bot.bot.send_message(
+            finance_bot.send_message(
                 chat_id, "Erro ao Deletar!", parse_mode="Markdown"
             )
 
-    elif resp == "Sao":
+    elif resp == "Não":
         finance_bot.answer_callback_query(call.id)
         finance_bot.edit_message_text(
             chat_id=chat_id,
@@ -68,3 +69,4 @@ def third_quest_del(call, finance_bot):
         )
 
     del chat_data[chat_id]
+    conv_manager.cleanup(chat_id)

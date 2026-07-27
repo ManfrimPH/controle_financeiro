@@ -1,16 +1,34 @@
 services:
   db:
-    image: postgres:15-alpine
-    container_name: postgres_db
+    image: postgres:16-alpine
+    container_name: cf_db
     restart: always
     environment:
-      POSTGRES_USER: manfrim
-      POSTGRES_PASSWORD: manfrim
-      POSTGRES_DB: financeiro
+      POSTGRES_USER: cf_user
+      POSTGRES_PASSWORD: cf_pass_2026
+      POSTGRES_DB: cf_financeiro
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - cf_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cf_user -d cf_financeiro"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  bot:
+    build: .
+    container_name: cf_bot
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    volumes:
+      - ./credentials.json:/app/credentials.json:ro
 
 volumes:
-  postgres_data:
+  cf_data:
