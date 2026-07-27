@@ -1,5 +1,6 @@
 from telebot import types
 from data_base import add_gain, add_spent
+from conversation import conv_manager
 
 chat_data = {}
 
@@ -117,9 +118,10 @@ def save_gain(message, finance_bot):
     if resp == True:
         finance_bot.send_message(chat_id, "Dados inseridos!", parse_mode="Markdown")
     elif resp == False:
-        finance_bot.bot.send_message(chat_id, "Erro ao inserir!", parse_mode="Markdown")
+        finance_bot.send_message(chat_id, "Erro ao inserir!", parse_mode="Markdown")
 
     del chat_data[chat_id]
+    conv_manager.cleanup(chat_id)
 
 
 ## Spent Format
@@ -245,6 +247,7 @@ def save_spent(message, finance_bot):
     if resp == True:
         finance_bot.send_message(chat_id, "Dados inseridos!", parse_mode="Markdown")
     elif resp == False:
-        finance_bot.bot.send_message(chat_id, "Erro ao inserir!", parse_mode="Markdown")
+        finance_bot.send_message(chat_id, "Erro ao inserir!", parse_mode="Markdown")
 
     del chat_data[chat_id]
+    conv_manager.cleanup(chat_id)
