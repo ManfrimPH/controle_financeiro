@@ -1,7 +1,11 @@
 import telebot
 import os
+import time
+import random
 import logging
 from dotenv import load_dotenv
+
+from retry import retry_methods
 
 from add import (
     first_quest_add,
@@ -30,6 +34,7 @@ load_dotenv()
 bot_key = os.getenv("BOT_KEY")
 
 finance_bot = telebot.TeleBot(bot_key)
+retry_methods(finance_bot)
 
 # Set up command menu
 COMMANDS = [
@@ -146,5 +151,17 @@ def summary_command(message):
 
 
 if __name__ == "__main__":
-    logger.info("Bot started")
-    finance_bot.infinity_polling()
+    retries = 0
+    while True:
+        try:
+            logger.info("Bot started")
+            finance_bot.infinity_polling(timeout=10, long_polling_timeout=10)
+            break
+        except Exception as e:
+            retries += 1
+            wait = min(2 ** retries, 60) + random.uniform(0, 2)
+            logger.warning(
+                "Polling falhou (%s). Tentando de novo em %.1fs...",
+                e, wait,
+            )
+            time.sleep(wait)
